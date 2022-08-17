@@ -1,6 +1,5 @@
 jQuery(function ($) {
-  $(document).ready(function () {
-
+  $(document).on('change', function () {
 
   'use strict';
 
@@ -1014,6 +1013,5 @@ jQuery(function ($) {
       $(".loader").css("display", "none");
     });
   });
-
+  })
 }(jQuery));
-})
