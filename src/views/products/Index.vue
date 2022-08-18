@@ -2087,17 +2087,22 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" v-if="paginate.last_page > 1">
                 <div class="col-12 d-flex justify-content-center wow fadeInUp animated">
                   <ul class="pagination text-center">
-                    <li class="next"><a href="#0"><i class="flaticon-left-arrows"
+                    <li v-if="paginate.current_page !== 1" class="next"><a href="#0"><i
+                        class="flaticon-left-arrows"
                                                      aria-hidden="true"></i> </a></li>
-                    <li><a href="#0">1</a></li>
-                    <li><a href="#0" class="active">2</a></li>
-                    <li><a href="#0">3</a></li>
-                    <li><a href="#0">...</a></li>
-                    <li><a href="#0">10</a></li>
-                    <li class="next"><a href="#0"><i class="flaticon-next-1"
+                      <li v-for="p in paginate.links">
+                        <template v-if="Number(p.label)">
+                          <a @click.prevent="getFilterProduct(p.label)" href="#0"
+                             :class="Number(p.label) === paginate.current_page ? 'active' : ''">{{ p.label }}</a>
+                        </template>
+
+                      </li>
+
+                    <li  v-if="paginate.current_page !== paginate.last_page" class="next"><a href="#0"><i
+                        class="flaticon-next-1"
                                                      aria-hidden="true"></i> </a></li>
                   </ul>
                 </div>
@@ -2118,7 +2123,9 @@ export default {
     return {
       products: [],
       filter: [],
-      categories: []
+      categories: [],
+      paginate: [],
+      page: null
     }
   },
   mounted() {
@@ -2126,10 +2133,15 @@ export default {
     this.getFilters()
   },
   methods: {
-    getProducts() {
-      this.axios.get('http://127.0.0.1:8000/api/products')
+    getProducts(page=1) {
+      this.axios.post('http://127.0.0.1:8000/api/products/', {
+        categories: this.categories,
+        page: page
+      })
           .then( res => {
             this.products = res.data.data
+            this.paginate = res.data.meta
+            console.log(this.paginate);
           })
           .finally(() => {
             $(document).trigger('initJsPlugin')
@@ -2150,16 +2162,8 @@ export default {
         })
       }
     },
-    getFilterProduct() {
-      this.axios.post('http://127.0.0.1:8000/api/products/', {
-        categories: this.categories
-      })
-          .then( res => {
-            this.products = res.data.data
-          })
-          .finally(() => {
-            $(document).trigger('initJsPlugin')
-          })
+    getFilterProduct(page) {
+      this.getProducts(page)
     }
   }
 }
