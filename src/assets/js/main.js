@@ -1,5 +1,5 @@
 jQuery(function ($) {
-  $(document).on('change', function () {
+  $(document).on('initJsPlugin', function () {
 
   'use strict';
 
