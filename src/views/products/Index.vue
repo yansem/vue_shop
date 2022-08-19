@@ -219,7 +219,8 @@
                             </a>
                               <div class="products-grid-one__badge-box"> <span
                                   class="bg_base badge new ">New</span>
-                              </div> <a href="cart.html" class="addcart btn--primary style2">
+                              </div> <a href="cart.html" class="addcart btn--primary style2"
+                                        @click.prevent="addToCart(product.id)">
                                 Add To Cart </a>
                               <div class="products-grid__usefull-links">
                                 <ul>
@@ -2141,7 +2142,6 @@ export default {
           .then( res => {
             this.products = res.data.data
             this.paginate = res.data.meta
-            console.log(this.paginate);
           })
           .finally(() => {
             $(document).trigger('initJsPlugin')
@@ -2164,6 +2164,31 @@ export default {
     },
     getFilterProduct(page) {
       this.getProducts(page)
+    },
+    addToCart(id) {
+      let newProduct = [{
+        'id': id,
+        'qty': 1
+      }]
+      let cart = localStorage.getItem('cart');
+      if (!cart) {
+        localStorage.setItem('cart', JSON.stringify(newProduct))
+      } else {
+        cart = JSON.parse(cart)
+        cart.forEach( product => {
+            if (product.id === id) {
+              newProduct = null
+              product.qty = Number(product.qty) + 1
+            }
+          })
+        Array.prototype.push.apply(cart, newProduct)
+        localStorage.setItem('cart', JSON.stringify(cart))
+      }
+
+
+
+
+
     }
   }
 }
